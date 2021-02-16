@@ -1,0 +1,7 @@
+# Library requirements
+sqlalchemy==1.3.23
+elasticsearch-dsl==7.3.0
+
+# Test requirements
+psycopg2-binary
+pytest
