@@ -11,7 +11,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as readme_f
 setup(
     name='sqlalchemy-auditlog',
     version=auditlog.__version__,
-    packages=['sqlalchemy_auditlog'],
+    packages=['auditlog'],
     include_package_data=True,
     url='https://github.com/dealflowteam/sqlalchemy-auditlog',
     license='MIT',
