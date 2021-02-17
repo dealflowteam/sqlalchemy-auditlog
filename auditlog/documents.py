@@ -10,7 +10,6 @@ from auditlog.context import get_remote_addr
 # Define a default Elasticsearch client
 connections.create_connection(hosts=[conf.ELASTICSEARCH_HOST])
 
-
 MAX = 75
 
 
@@ -21,7 +20,6 @@ class Change(InnerDoc):
 
 
 class LogEntry(Document):
-
     class Action:
         CREATE = 'create'
         UPDATE = 'update'
@@ -144,3 +142,17 @@ class LogEntry(Document):
         kwargs.setdefault('actor_email', user.email)
         kwargs.setdefault('actor_first_name', user.first_name)
         kwargs.setdefault('actor_last_name', user.last_name)
+
+
+def register_log_entry_class(cls):
+    """
+    Register new log entry class
+    """
+    if not issubclass(cls, LogEntry):
+        raise ValueError(f"`{cls.__name__}` must inherit from `LogEntry` class")
+    LogEntry.subclass = cls
+    return cls
+
+
+def log_entry_class():
+    return getattr(LogEntry, 'subclass', LogEntry)

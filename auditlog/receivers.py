@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from auditlog.diff import set_entry_attributes
-from auditlog.documents import LogEntry
+from auditlog.documents import log_entry_class
 
 
 def track_instances_after_flush(session: Session, context):
@@ -10,21 +10,21 @@ def track_instances_after_flush(session: Session, context):
     for obj in session.new:
         set_entry_attributes(
             obj,
-            LogEntry.Action.CREATE,
+            log_entry_class().Action.CREATE,
             entry_attrs,
             user
         )
     for obj in session.dirty:
         set_entry_attributes(
             obj,
-            LogEntry.Action.UPDATE,
+            log_entry_class().Action.UPDATE,
             entry_attrs,
             user
         )
     for obj in session.deleted:
         set_entry_attributes(
             obj,
-            LogEntry.Action.DELETE,
+            log_entry_class().Action.DELETE,
             entry_attrs,
             user
         )
@@ -34,6 +34,6 @@ def save_log_entries_after_commit(session: Session):
     entry_attrs = session.info.get('entry_attrs')
     if entry_attrs:
         for kwargs in entry_attrs:
-            LogEntry.log_create(kwargs)
+            log_entry_class().log_create(kwargs)
         del session.info['entry_attrs']
 

@@ -1,10 +1,13 @@
 import uuid
+from typing import Any, Optional
 
+from elasticsearch_dsl import Text
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+from auditlog.documents import register_log_entry_class, LogEntry
 from auditlog.registry import auditlog
 
 Base = declarative_base()
@@ -133,6 +136,18 @@ class SimpleExcludeModel(Base):
     id = Column(Integer, primary_key=True)
     label = Column(String)
     text = Column(String)
+
+
+@register_log_entry_class
+class CustomLogEntry(LogEntry):
+    text = Text()
+
+    @classmethod
+    def get_fields(cls, instance: Any, **kwargs) -> Optional[dict]:
+        kwargs = super().get_fields(instance, **kwargs)
+        if kwargs:
+            kwargs['text'] = getattr(instance, 'text', None)
+        return kwargs
 
 
 auditlog.register(User)

@@ -4,7 +4,7 @@ from typing import Any, List
 from sqlalchemy import inspect
 from sqlalchemy.orm import object_mapper, ColumnProperty
 
-from auditlog.documents import LogEntry
+from auditlog.documents import log_entry_class
 
 
 def get_fields_in_model(instance: Any) -> List:
@@ -48,19 +48,19 @@ def model_instance_diff(obj: Any):
 
 
 def set_entry_attributes(
-    obj: Any, action: LogEntry.Action, entry_attrs: list, user_ref: weakref.ref
+    obj: Any, action: log_entry_class().Action, entry_attrs: list, user_ref: weakref.ref
 ) -> None:
     from auditlog.registry import auditlog
 
     if auditlog.contains(obj.__class__):
         changes = model_instance_diff(obj)
-        if changes or action == LogEntry.Action.DELETE:
+        if changes or action == log_entry_class().Action.DELETE:
             # create log entry only if there are any changes in tracked fields
-            kwargs = LogEntry.get_fields(
+            kwargs = log_entry_class().get_fields(
                 obj,
                 action=action,
                 changes=changes,
             )
             if user_ref and user_ref():
-                LogEntry.set_user_fields(user_ref(), kwargs)
+                log_entry_class().set_user_fields(user_ref(), kwargs)
             entry_attrs.append(kwargs)

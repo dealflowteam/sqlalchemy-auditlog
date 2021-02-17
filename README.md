@@ -36,6 +36,8 @@ event.listen(Session, "after_flush", track_instances_after_flush)
 event.listen(Session, "after_commit", save_log_entries_after_commit)
 ```
 
+- set current user with ```set_user()``` function
+
 - register models:
 
 ```python
@@ -47,4 +49,13 @@ class SimpleModel(Base):
 
 
 auditlog.register(SimpleModel)
+```
+
+- to extend `LogEntry` document create custom subclass with decorator:
+```python
+from auditlog.documents import LogEntry, register_log_entry_class
+
+@register_log_entry_class
+class CustomLogEntry(LogEntry):
+    ...
 ```
